@@ -1,38 +1,62 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
 import streamlit as st
+from PIL import Image
 
-"""
-# Welcome to Streamlit!
+def generate_response(input_text):
+    # Aquí puedes agregar la lógica para generar la respuesta del modelo GPT
+    # Basado en el texto de entrada
+    # Puedes utilizar tu propio modelo o una API de chatbot como OpenAI GPT-3
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
+    # Ejemplo de respuesta estática
+    response = "Hola, soy un chatbot. ¿En qué puedo ayudarte?"
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+    return response
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+def main():
+    # Configuración de la página
+    st.set_page_config(page_title="FunesBot Project", page_icon=":speech_balloon:")
 
+    #Imagen de fondo
+    image = Image.open("iamegenfondo.jpg") 
+    st.image(image, use_column_width=True)
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+    # Título y texto de bienvenida
+    st.title("Chatbot FunesBot Project ")
+    st.write("Welcome! This is a chatbot created by the FunesBot team at Data Science 1203 Le Wagon. He can answer your questions about a book. Please enter your questions in the text field below.")
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+    # Lista para almacenar el historial de preguntas y respuestas
+    chat_history = []
 
-    points_per_turn = total_points / num_turns
+    # Bucle continuo de preguntas y respuestas
+    while True:
+        # Área de texto para que el usuario ingrese la pregunta
+        user_input = st.text_input("Enter your question here:")
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
+        # Verificar si se presiona la tecla Enter en el teclado
+        if user_input and (st.button("Enviar") or st.session_state.enter_pressed):
+            # Generar respuesta
+            response = generate_response(user_input)
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+            # Agregar la pregunta y respuesta al historial
+            chat_history.append((user_input, response))
+
+            # Restablecer el valor de enter_pressed
+            st.session_state.enter_pressed = False
+
+        # Mostrar el historial de preguntas y respuestas
+        with st.expander("Historial completo"):
+            for i, (question, answer) in enumerate(chat_history, 1):
+                st.write(f"**Pregunta {i}:** {question}")
+                st.write(f"**Respuesta {i}:** {answer}")
+
+        # Mostrar la respuesta más reciente
+        if len(chat_history) > 0:
+            st.subheader("Respuesta más reciente:")
+            st.text(chat_history[-1][1])
+
+        # Opción para hacer otra pregunta
+        another_question = st.button("Make other question")
+        if not another_question:
+            break
+
+if __name__ == "__main__":
+    main()
