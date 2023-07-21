@@ -1,66 +1,92 @@
 import streamlit as st
 from PIL import Image
-
-
+from streamlit_chat import message
+import requests
+import base64
 
 def generate_response(input_text):
-    # Aquí puedes agregar la lógica para generar la respuesta del modelo GPT
-    # Basado en el texto de entrada
-    # Puedes utilizar tu propio modelo o una API de chatbot como OpenAI GPT-3
+    url='http://127.0.0.1:8000/predict'
 
-    # Ejemplo de respuesta estática
-    response = "Hola, soy un chatbot. ¿En qué puedo ayudarte?"
+    params= {'user_query':input_text
+         }
+    response=requests.get(url=url,params=params).json()
 
-    return response
+    return response['answer_query']['Respuesta']['content']
 
-def main():
+with st.sidebar: 
     # Configuración de la página
-    st.set_page_config(page_title="Chatbot con Streamlit", page_icon=":speech_balloon:")
+    st.set_page_config(page_title="FunesBot Project", page_icon=":speech_balloon:")
 
-    #Imagen de fondo
-    image = Image.open("iamegenfondo.jpg") 
+    #Imagen
+    image = Image.open("imagenfondo1.jpg") 
     st.image(image, use_column_width=True)
-    
+
     # Título y texto de bienvenida
-    st.title("Chatbot con Streamlit")
-    st.write("¡Bienvenido! Este es un chatbot que puede responder tus preguntas.")
+    st.title("Chatbot FunesBot Project")
+    st.write("Welcome! This is a chatbot created by the FunesBot team at Data Science 1203 Le Wagon. He can answer your questions about a book. Please enter your questions in the text field below.")
+    #Gatito estudioso
+    st.image(
+        "https://i.gifer.com/Ao.gif",
+        width=200,
+    )
+    # #Musica autoreproducción en sidebar 
+    # def autoplay_audio(file_path: str):
+    #     with open(file_path, "rb") as f:
+    #         data = f.read()
+    #         b64 = base64.b64encode(data).decode()
+    #         md = f"""
+    #             <audio controls autoplay="true">
+    #             <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+    #             </audio>
+    #             """
+    #         st.markdown(
+    #             md,
+    #             unsafe_allow_html=True,
+    #         )
+    # st.write("Ambiental Music!")
+    # autoplay_audio("music.mp3")
 
-    # Lista para almacenar los mensajes
-    messages = []
+#Define imagen de fondo principal
+#     def add_bg_from_local(image_file):
+#         with open(image_file, "rb") as image_file:
+#             encoded_string = base64.b64encode(image_file.read())
+#         st.markdown(
+#         f"""
+#         <style>
+#         .stApp {{
+#             background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
+#             background-size: cover
+#         }}
+#         </style>
+#         """,
+#         unsafe_allow_html=True
+#         )
+#     add_bg_from_local('duotone.png')
 
-    # Bucle continuo de preguntas y respuestas
-    while True:
-        # Mostrar mensajes anteriores y entrada del usuario
-        for message in messages:
-            if message["from_user"]:
-                st.chat_message(message["content"])
-            else:
-                st.write(f"> {message['content']}")
+def main():     
+    ##  CHATBOT 
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-        # Obtener la entrada del usuario
-        user_input = st.chat_input("Escribe un mensaje...")
+    # React to user input
+    if user_input := st.chat_input("Enter your question here:"):
+        # Display user message in chat message container
+        st.chat_message("user").markdown(user_input)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": user_input})
 
-        # Agregar mensaje del usuario a la lista
-        messages.append({"content": user_input, "from_user": True})
-
-        # Generar respuesta
         response = generate_response(user_input)
-
-        # Agregar mensaje del bot a la lista
-        messages.append({"content": response, "from_user": False})
-
-        # Mostrar la conversación completa
-        st.subheader("Conversación completa")
-        for message in messages:
-            if message["from_user"]:
-                st.text_input("Usuario", message["content"], key=message["content"])
-            else:
-                st.text_input("Chatbot", message["content"], key=message["content"])
-
-        # Opción para hacer otra pregunta
-        another_question = st.button("Hacer otra pregunta")
-        if not another_question:
-            break
-
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        
 if __name__ == "__main__":
     main()

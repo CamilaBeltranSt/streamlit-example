@@ -2,12 +2,10 @@ import streamlit as st
 from PIL import Image
 from streamlit_chat import message
 import requests
-import os
-import random
-import base64
+
 
 def generate_response(input_text):
-    url='http://127.0.0.1:4000/predict'
+    url='http://127.0.0.1:8000/predict'
 
     params= {'user_query':input_text
          }
@@ -18,7 +16,7 @@ def generate_response(input_text):
 def main():
     # Configuración de la página
     st.set_page_config(page_title="FunesBot Project", page_icon=":speech_balloon:")
-    
+
     #Imagen de fondo
     image = Image.open("iamegenfondo.jpg") 
     st.image(image, use_column_width=True)
@@ -27,7 +25,7 @@ def main():
     st.title("Chatbot FunesBot Project ")
     st.write("Welcome! This is a chatbot created by the FunesBot team at Data Science 1203 Le Wagon. He can answer your questions about a book. Please enter your questions in the text field below.")
 
-    # Lista para almacenar el historial de preguntas y respuestas
+    # Initialize chat history
     if 'message' not in st.session_state:
         st.session_state['message'] = []
     
@@ -62,11 +60,6 @@ def main():
       st.session_state['message'] = []
       placeholder.empty()
      
-    # Mostrar la respuesta más reciente
-    #if len(messages) > 0:
-     #   st.subheader("Respuesta más reciente:")
-      #  st.text(messages[-1][1])
-        
     
 if __name__ == "__main__":
     main()
