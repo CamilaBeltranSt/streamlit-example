@@ -2,6 +2,8 @@ import streamlit as st
 from PIL import Image
 from streamlit_chat import message
 import requests
+import os
+import random
 import base64
 
 def generate_response(input_text):
@@ -25,12 +27,46 @@ with st.sidebar:
     st.title("Chatbot FunesBot Project")
     st.write("Welcome! This is a chatbot created by the FunesBot team at Data Science 1203 Le Wagon. He can answer your questions about a book. Please enter your questions in the text field below.")
     #Gatito estudioso
-    st.image(
+    #st.image(
+    #    "https://i.gifer.com/Ao.gif",
+    #    width=200,
+    #)
+    ran_gif = random.randint(1,5)
+    if ran_gif == 1:
+        st.image(
         "https://i.gifer.com/Ao.gif",
         width=200,
     )
-    # #Musica autoreproducción en sidebar 
-    # def autoplay_audio(file_path: str):
+
+    if ran_gif == 2:
+        st.image(
+            "https://i.gifer.com/48Z.gif",
+            width = 200,
+
+        )
+
+    if ran_gif == 3:
+        st.image(
+            "https://i.gifer.com/2GU.gif",
+                    width = 200,
+
+        )
+
+    if ran_gif == 4:
+        st.image(
+            "https://i.gifer.com/Aw.gif",
+                                width = 200,
+
+        )
+
+    if ran_gif == 5:
+        st.image(
+            "https://i.gifer.com/A7PB.gif",
+                                width = 200,
+
+        )
+   #Musica autoreproducción en sidebar
+    #def autoplay_audio(file_path: str):
     #     with open(file_path, "rb") as f:
     #         data = f.read()
     #         b64 = base64.b64encode(data).decode()
@@ -43,27 +79,28 @@ with st.sidebar:
     #             md,
     #             unsafe_allow_html=True,
     #         )
-    # st.write("Ambiental Music!")
-    # autoplay_audio("music.mp3")
+    #st.write("Ambiental Music!")
+    #autoplay_audio("music.mp3")
 
 #Define imagen de fondo principal
-#     def add_bg_from_local(image_file):
-#         with open(image_file, "rb") as image_file:
-#             encoded_string = base64.b64encode(image_file.read())
-#         st.markdown(
-#         f"""
-#         <style>
-#         .stApp {{
-#             background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
-#             background-size: cover
-#         }}
-#         </style>
-#         """,
-#         unsafe_allow_html=True
-#         )
-#     add_bg_from_local('duotone.png')
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image_file:
+         encoded_string = base64.b64encode(image_file.read())
+    st.markdown(
+     f"""
+     <style>
+     .stApp {{
+         background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
+         background-size: cover
+     }}
+     </style>
+     """,
+     unsafe_allow_html=True
+     )
+add_bg_from_local('duotone.png')
 
-def main():     
+def main():  
+   
     ##  CHATBOT 
     # Initialize chat history
     if "messages" not in st.session_state:
